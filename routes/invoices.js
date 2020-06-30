@@ -26,7 +26,7 @@ invoiceRoutes.get("/:id", async (req, res, next) => {
         }
 
         const company = await db.query(
-            `SELECT * FROM companies WHERE code=$1`, [results.rows[0].comp_code]
+            `SELECT code, name, description FROM companies WHERE code=$1`, [results.rows[0].comp_code]
         );
 
         return res.json({

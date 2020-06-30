@@ -6,7 +6,7 @@ const companyRoutes = new express.Router();
 companyRoutes.get("/", async (req, res, next) => {
     try {
         const results = await db.query(
-            `SELECT * FROM companies`
+            `SELECT code, name, description FROM companies`
         );
 
         return res.json({ companies: results.rows });
@@ -20,13 +20,13 @@ companyRoutes.get("/:code", async (req, res, next) => {
     try {
         const code = req.params.code
         const results = await db.query(
-            `SELECT * FROM companies WHERE code=$1`, [code]
+            `SELECT code, name, description FROM companies WHERE code=$1`, [code]
         );
         if (results.rowCount === 0) {
             throw new ExpressError(`Code: "${code}" doesn't exist`, 404);
         }
         const invoice = await db.query(
-            `SELECT * FROM invoices WHERE comp_code=$1`, [code]
+            `SELECT id, comp_code, amt, paid, add_date, paid_date FROM invoices WHERE comp_code=$1`, [code]
         );
         return res.json({
             company: {
