@@ -25,8 +25,17 @@ companyRoutes.get("/:code", async (req, res, next) => {
         if (results.rowCount === 0) {
             throw new ExpressError(`Code: "${code}" doesn't exist`, 404);
         }
-
-        return res.json({ company: results.rows[0] });
+        const invoice = await db.query(
+            `SELECT * FROM invoices WHERE comp_code=$1`, [code]
+        );
+        return res.json({
+            company: {
+                code: results.rows[0].code,
+                name: results.rows[0].name,
+                description: results.rows[0].description,
+                invoices: invoice.rows[0]
+            }
+        });
     }
     catch (err) {
         return next(err);
@@ -81,7 +90,7 @@ companyRoutes.delete("/:code", async (req, res, next) => {
             throw new ExpressError(`Code: "${code}" doesn't exist`, 404);
         }
 
-        return res.status(200).json({ status: "Deleted"});
+        return res.status(200).json({ status: "Deleted" });
     }
     catch (err) {
         return next(err);
